@@ -1,42 +1,43 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { Customer, validate } = require('../models/customer');
+const { Customer, validate } = require("../models/customer");
 
-
-router.get('/', async (req, res) => {
-  const customers = await Customer.find().sort('name');
+router.get("/", async (req, res) => {
+  const customers = await Customer.find().sort("name");
   res.send(customers);
 });
 
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
-    if (!customer) res.status(404).send('The customer with given ID could not be found');
+    if (!customer)
+      res.status(404).send("The customer with given ID could not be found");
     res.send(customer);
-  }
-  catch (err) {
+  } catch (err) {
     res.status(400).send(err.message);
   }
-
 });
 
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const customer = await Customer.findByIdAndUpdate(req.params.id, {
-    name: req.body.name,
-    phone: req.body.phone,
-    isGold: req.body.isGold
-  },
+  const customer = await Customer.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      phone: req.body.phone,
+      isGold: req.body.isGold
+    },
     { new: true }
   );
-  if (!customer) return res.status(404).send('The customer with given ID could not be find');
+  if (!customer)
+    return res.status(404).send("The customer with given ID could not be find");
 
   res.send(customer);
 });
 
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   const { error } = validate(req.body);
   if (error) {
     res.status(400).send(error.details[0].message);
@@ -52,27 +53,22 @@ router.post('/', async (req, res) => {
   try {
     customer = await customer.save();
     res.send(customer);
-  }
-  catch (err) {
-    res.status(400).send('Error while posting: ', err.message);
+  } catch (err) {
+    res.status(400).send("Error while posting: ", err.message);
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const customer = await Customer.findOneAndDelete({ _id: req.params.id });
     if (!customer) {
-      res.send('Customer of given id could not be found');
+      res.send("Customer of given id could not be found");
       return;
     }
     res.send(customer);
-  }
-  catch (err) {
+  } catch (err) {
     res.send(err.message);
   }
-
 });
-
-
 
 module.exports = router;

@@ -52,7 +52,11 @@ router.post("/", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const genre = await Genre.findOneAndDelete({ _id: req.body.id });
+    const genre = await Genre.findOneAndDelete({ _id: req.params.id });
+    if (!genre) {
+      res.send("Customer of given id could not be found");
+      return;
+    }
     res.send(genre);
   } catch (err) {
     res.send(err.message);
