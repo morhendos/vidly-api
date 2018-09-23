@@ -54,7 +54,7 @@ router.delete("/:id", async (req, res) => {
   try {
     const genre = await Genre.findOneAndDelete({ _id: req.params.id });
     if (!genre) {
-      res.send("Customer of given id could not be found");
+      res.send("Genre of given id could not be found");
       return;
     }
     res.send(genre);
