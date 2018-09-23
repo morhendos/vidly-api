@@ -1,8 +1,12 @@
-const express = require("express");
-const router = express.Router();
 const { Rental, validate } = require("../models/rental");
 const { Movie } = require("../models/movie");
 const { Customer } = require("../models/customer");
+const Fawn = require("fawn");
+const mongoose = require("mongoose");
+const express = require("express");
+const router = express.Router();
+
+Fawn.init(mongoose);
 
 router.get("/", async (req, res) => {
   const rentals = await Rental.find().sort("-dateOut");
@@ -28,20 +32,29 @@ router.post("/", async (req, res) => {
         name: customer.name,
         phone: customer.phone
       },
-      _id: movie._id,
-      title: movie.title,
-      dailyRentalRate: movie.dailyRentalRate
+      movie: {
+        _id: movie._id,
+        title: movie.title,
+        dailyRentalRate: movie.dailyRentalRate
+      }
     });
 
     try {
-      rental = await rental.save();
-
-      movie.numberInStock--;
-      movie.save();
+      new Fawn.Task()
+        .save("rentals", rental)
+        .update(
+          "movies",
+          { _id: movie._id },
+          {
+            $inc: { numberInStock: -1 }
+          }
+        )
+        .run();
 
       res.send(rental);
-    } catch (err) {
-      res.status(400).send(`${err.name}: ${err.message}`);
+    } catch (ex) {
+      // Internal server error
+      res.status(500).send(`Something went wrong. ${ex.name}: ${ex.message}`);
     }
   } catch (err) {
     res.status(400).send(`${err.name}: ${err.message}`);
