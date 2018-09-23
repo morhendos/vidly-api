@@ -14,8 +14,7 @@ const Movie = mongoose.model(
       maxlength: 255
     },
     genre: {
-      type: genreSchema,
-      ref: "Genre"
+      type: genreSchema
     },
     numberInStock: {
       type: Number,
@@ -38,7 +37,7 @@ function validateMovie(movie) {
       .min(1)
       .max(255)
       .required(),
-    genreId: Joi.string().required(),
+    genreId: Joi.objectId().required(),
     numberInStock: Joi.number()
       .min(0)
       .required(),
