@@ -4,6 +4,7 @@ const app = express();
 const genres = require("./routes/genres");
 const customers = require("./routes/customers");
 const movies = require("./routes/movies");
+const rentals = require("./routes/rentals");
 const dbName = "vidly";
 
 // Connect to db
@@ -19,6 +20,7 @@ app.use(express.json());
 app.use("/api/genres", genres);
 app.use("/api/customers", customers);
 app.use("/api/movies", movies);
+app.use("/api/rentals", rentals);
 
 const PORT = process.env.port || 3003;
 console.log(PORT);
