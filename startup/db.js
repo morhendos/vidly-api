@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 const winston = require("winston");
+const config = require("config");
+module.exports = function() {
+  const db = config.get("db");
 
-module.exports = function(dbName) {
   // Connect to db
   mongoose
     .connect(
-      `mongodb://localhost/${dbName}`,
+      db,
       { useNewUrlParser: true }
     )
-    .then(() => winston.info(`Connected to database: ${dbName} `));
+    .then(() => winston.info(`Connected to ${db}`));
 };
